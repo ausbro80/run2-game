@@ -172,7 +172,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
-<button id="muteBtn" onclick="toggleMute()" title="음악 ON/OFF">🔊</button>
+<button id="muteBtn" onclick="toggleMute()" title="Music ON/OFF">🔊</button>
 
 <!-- ══ LANDING ══ -->
 <div class="screen" id="landing">
@@ -181,12 +181,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
       <div class="logo-tag">RUN—2</div>
       <div class="logo-sub">GHOST RUNNER</div>
     </div>
-    <div class="tagline">달려라 · 이겨라 · 전설이 되어라</div>
+    <div class="tagline">Run · Win · Become Legend</div>
     <div class="feat-row">
-      <div class="feat">⚡ 무한 러너</div>
-      <div class="feat">👻 고스트 대결</div>
-      <div class="feat">🪙 코인 & 파워업</div>
-      <div class="feat">🏆 리더보드</div>
+      <div class="feat">⚡ Endless Runner</div>
+      <div class="feat">👻 Ghost Battle</div>
+      <div class="feat">🪙 Coins & Powerups</div>
+      <div class="feat">🏆 Leaderboard</div>
     </div>
 
     <button class="btn-land" onclick="goSetup()"><span>▶ PLAY NOW</span></button>
@@ -232,22 +232,22 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
       <canvas id="gameCanvas"></canvas>
       <div id="gameOverlay">
         <div id="goTitle">RUN—2</div>
-        <div id="goMsg">스페이스바 또는 탭으로 점프\n더블점프 가능 · 코인을 모아라!</div>
+        <div id="goMsg">SPACE or TAP to jump · Double jump · Collect coins!</div>
         <div id="goScore"></div>
         <div id="goRecord"></div>
         <div id="goCoins"></div>
-        <div id="goWin">👻 고스트를 물리쳤다!</div>
+        <div id="goWin">👻 Ghost Defeated!</div>
         <div id="goBtns">
           <button class="go-btn" id="goStart" onclick="startRun()">START</button>
-          <button class="go-btn g" id="goGhost" style="display:none" onclick="startGhost()">👻 고스트 대결</button>
-          <button class="go-btn s" id="goShare" style="display:none" onclick="shareRun()">🔗 공유</button>
-          <button class="go-btn lb" id="goLB" style="display:none" onclick="showLB()">🏆 순위</button>
-          <button class="go-btn back" id="goBack" style="display:none" onclick="goSetup()">← 캐릭터</button>
+          <button class="go-btn g" id="goGhost" style="display:none" onclick="startGhost()">👻 Ghost Battle</button>
+          <button class="go-btn s" id="goShare" style="display:none" onclick="shareRun()">🔗 Share</button>
+          <button class="go-btn lb" id="goLB" style="display:none" onclick="showLB()">🏆 Ranks</button>
+          <button class="go-btn back" id="goBack" style="display:none" onclick="goSetup()">← Back</button>
         </div>
       </div>
     </div>
     <div id="speedBar"><div id="speedFill" style="width:5%"></div></div>
-    <div id="touchHint">탭 / 스페이스바 점프 · 더블점프 · 코인 수집 · 파워업 획득!</div>
+    <div id="touchHint">TAP / SPACE jump · Double jump · Collect coins · Grab powerups!</div>
   </div>
 </div>
 
@@ -259,7 +259,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
     <div class="lb-btns">
       <button class="lb-action" onclick="goSetup()">▶ PLAY</button>
       <button class="lb-action back" onclick="showScreen('landing')">← HOME</button>
-      <button class="lb-action back lb-clear" onclick="clearLB()" title="기록 초기화">🗑</button>
+      <button class="lb-action back lb-clear" onclick="clearLB()" title="Reset records">🗑</button>
     </div>
   </div>
 </div>
@@ -393,7 +393,7 @@ async function sbGetLB(){
   if(!data)return null;
   return data.map(e=>({
     name:e.name,score:e.score,coins:e.coins||0,charIdx:e.char_idx||0,
-    time:e.created_at?new Date(e.created_at).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'',
+    time:e.created_at?new Date(e.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'',
     id:e.name, // use name as stable id for challenge
     replay:e.replay||[]
   }));
@@ -451,7 +451,7 @@ function addLBEntry(name,score,coins,charIdx,replayData){
   return result;
 }
 
-function clearLB(){if(confirm('리더보드를 초기화할까요?')){localStorage.removeItem('run2_lb');renderLB();updateLandingLB();}}
+function clearLB(){if(confirm('Reset leaderboard?')){localStorage.removeItem('run2_lb');renderLB();updateLandingLB();}}
 
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -471,7 +471,7 @@ function drawCharMini(cv,charIdx){
 
 async function renderLBOnline(highlightId=null){
   const table=document.getElementById('lbTable');
-  table.innerHTML='<div class="lb-empty" style="opacity:.5">🌐 불러오는 중...</div>';
+  table.innerHTML='<div class="lb-empty" style="opacity:.5">🌐 Loading...</div>';
   const online=await sbGetLB();
   if(online){
     renderLBData(online,highlightId);
@@ -486,7 +486,7 @@ function renderLB(highlightId=null){
 
 function renderLBData(lb,highlightId=null){
   const table=document.getElementById('lbTable');
-  if(lb.length===0){table.innerHTML='<div class="lb-empty">아직 기록이 없어요.<br>첫 번째 전설이 되세요!</div>';return;}
+  if(lb.length===0){table.innerHTML='<div class="lb-empty">No records yet.<br>Be the first legend!</div>';return;}
   const medals=['gold','silver','bronze'];
   const rc=['r1','r2','r3'];
   const ri=['🥇','🥈','🥉'];
@@ -504,7 +504,7 @@ function renderLBData(lb,highlightId=null){
         <div class="lb-score">${String(e.score).padStart(4,'0')}</div>
         <div class="lb-coins-lb">🪙${e.coins||0}</div>
       </div>
-      ${!isMe&&hasReplay?`<button class="challenge-btn" onclick="challengeUser('${e.id}',event)">⚔ 대결</button>`:'<div></div>'}
+      ${!isMe&&hasReplay?`<button class="challenge-btn" onclick="challengeUser('${e.id}',event)">⚔ Challenge</button>`:'<div></div>'}
     </div>`;
   }).join('');
   lb.slice(0,15).forEach(e=>{const cv=document.getElementById('lbc'+e.id);if(cv)drawCharMini(cv,e.charIdx||0);});
@@ -1200,10 +1200,10 @@ function showGameOver(finalScore,prevBest,lbResult){
   document.getElementById('goCoins').textContent='🪙 COINS: '+totalCoins;
 
   const wm=document.getElementById('goWin');
-  if(ghostMode&&gDefeated){wm.style.display='block';document.getElementById('goMsg').textContent='고스트를 넘어서 달렸습니다!';}
-  else if(ghostMode){wm.style.display='none';document.getElementById('goMsg').textContent='아직 고스트를 못 이겼어요...';}
-  else{wm.style.display='none';document.getElementById('goMsg').textContent=isRecord?'🏆 새 기록 달성!':'오래 살아남을수록 강해집니다';}
-  document.getElementById('goStart').textContent='다시 시작';
+  if(ghostMode&&gDefeated){wm.style.display='block';document.getElementById('goMsg').textContent='You outlasted the ghost!';}
+  else if(ghostMode){wm.style.display='none';document.getElementById('goMsg').textContent="Couldn't beat the ghost...";}
+  else{wm.style.display='none';document.getElementById('goMsg').textContent=isRecord?'🏆 New Record!':'Survive longer to go further';}
+  document.getElementById('goStart').textContent='Play Again';
   document.getElementById('goGhost').style.display=localStorage.getItem('run2_ghost')?'flex':'none';
   document.getElementById('goShare').style.display='flex';
   document.getElementById('goLB').style.display='flex';
@@ -1224,7 +1224,7 @@ function showGameOver(finalScore,prevBest,lbResult){
 function initGameOverlay(){
   document.getElementById('gameOverlay').classList.remove('hidden');
   document.getElementById('goTitle').textContent='RUN—2';
-  document.getElementById('goMsg').textContent='스페이스바 또는 탭으로 점프\n더블점프 가능 · 코인을 모아라!';
+  document.getElementById('goMsg').textContent='SPACE or TAP to jump · Double jump · Collect coins!';
   document.getElementById('goScore').style.display='none';
   document.getElementById('goRecord').style.display='none';
   document.getElementById('goCoins').style.display='none';
@@ -1265,23 +1265,23 @@ function startGhost(){startRun(true);}
 /* ── SHARE ── */
 function shareRun(){
   const ghost=localStorage.getItem('run2_ghost');
-  if(!ghost){alert('먼저 플레이해주세요!');return;}
+  if(!ghost){alert('Play first!');return;}
   try{
     const arr=JSON.parse(ghost);
     const sampled=arr.filter((_,i)=>i%3===0);
     const enc=btoa(unescape(encodeURIComponent(JSON.stringify(sampled))));
     const finalScore=activePU==='double'?Math.floor(currentScore*1.5):currentScore;
     const url=window.location.href.split('?')[0]+'?ghost='+enc+'&score='+finalScore+'&name='+(playerName||'GHOST');
-    if(navigator.share)navigator.share({title:'RUN-2',text:`👻 ${playerName}의 고스트와 대결해봐! 점수: ${finalScore}`,url});
-    else navigator.clipboard.writeText(url).then(()=>alert('✅ 링크 복사!\n친구에게 보내서 고스트 대결시켜봐요 👻')).catch(()=>prompt('링크:',url));
-  }catch(e){alert('오류');}
+    if(navigator.share)navigator.share({title:'RUN-2',text:`👻 Beat ${playerName}'s ghost! Score: ${finalScore}`,url});
+    else navigator.clipboard.writeText(url).then(()=>alert('✅ Link copied!\nSend to friends for a ghost battle 👻')).catch(()=>prompt('Link:',url));
+  }catch(e){}
 }
 
 /* ── LOAD URL ── */
 (function loadURL(){
   const p=new URLSearchParams(window.location.search);
   const g=p.get('ghost'),s=p.get('score'),n=p.get('name');
-  if(g){try{const dec=JSON.parse(decodeURIComponent(escape(atob(g))));localStorage.setItem('run2_ghost',JSON.stringify(dec));setTimeout(()=>alert(`👻 ${n||'상대방'}의 고스트 수신!\n점수: ${s||'???'}\n\n이름 입력 후 대결 시작!`),500);}catch(e){}}
+  if(g){try{const dec=JSON.parse(decodeURIComponent(escape(atob(g))));localStorage.setItem('run2_ghost',JSON.stringify(dec));setTimeout(()=>alert(`👻 Ghost received from ${n||'opponent'}!\nScore: ${s||'???'}\n\nEnter your name to start the battle!`),500);}catch(e){}}
 })();
 
 /* ════════════════════════════════════
@@ -1293,7 +1293,7 @@ function challengeUser(entryId, evt){
   if(evt){evt.stopPropagation();}
   const lb=getLB();
   const entry=lb.find(e=>String(e.id)===String(entryId));
-  if(!entry||!entry.replay||entry.replay.length===0){alert('이 유저의 리플레이 데이터가 없어요!');return;}
+  if(!entry||!entry.replay||entry.replay.length===0){alert('No replay data for this user!');return;}
   challengeTarget=entry;
   // Set as ghost data
   localStorage.setItem('run2_ghost',JSON.stringify(entry.replay));
@@ -1304,9 +1304,9 @@ function challengeUser(entryId, evt){
   // Show challenge banner in overlay
   initGameOverlay();
   document.getElementById('goTitle').textContent='⚔ CHALLENGE!';
-  document.getElementById('goMsg').textContent=`vs ${entry.name}\n점수: ${String(entry.score).padStart(4,'0')}\n\n이길 수 있겠어?`;
+  document.getElementById('goMsg').textContent=`vs ${entry.name}\nScore: ${String(entry.score).padStart(4,'0')}\n\nThink you can win?`;
   document.getElementById('goGhost').style.display='flex';
-  document.getElementById('goGhost').textContent='⚔ 대결 시작!';
+  document.getElementById('goGhost').textContent='⚔ Start Challenge!';
 }
 
 /* ════════════════════════════════════
@@ -1418,7 +1418,7 @@ function showResultCard(won, myScore, myCharIdx, myName, opponentName, opponentS
   rCtx.textAlign='center';
   rCtx.font='7px "Press Start 2P"';rCtx.fillStyle='rgba(255,255,255,.25)';
   rCtx.fillText('play RUN-2 · ghost runner challenge',W/2,H-20);
-  rCtx.fillText(new Date().toLocaleDateString('ko-KR'),W/2,H-8);
+  rCtx.fillText(new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}),W/2,H-8);
 
   resultImageDataURL=rc.toDataURL('image/png');
   document.getElementById('resultCard').classList.remove('hidden');
@@ -1455,17 +1455,17 @@ async function shareResultCard(){
     const file=new File([blob],'run2_result.png',{type:'image/png'});
     const won=challengeTarget?currentScore>challengeTarget.score:false;
     const txt=won
-      ?`🏆 고스트를 이겼다! 내 점수: ${currentScore} vs ${challengeTarget?.name||'상대'}의 ${challengeTarget?.score||0} #RUN2 #GhostRunner`
-      :`👻 고스트에게 졌다... 내 점수: ${currentScore} vs ${challengeTarget?.name||'상대'}의 ${challengeTarget?.score||0} #RUN2 #GhostRunner`;
+      ?`🏆 Beat the ghost! My score: ${currentScore} vs ${challengeTarget?.name||'rival'}'s ${challengeTarget?.score||0} #RUN2 #GhostRunner`
+      :`👻 Lost to the ghost... My score: ${currentScore} vs ${challengeTarget?.name||'rival'}'s ${challengeTarget?.score||0} #RUN2 #GhostRunner`;
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({title:'RUN-2 결과카드',text:txt,files:[file]});
+      await navigator.share({title:'RUN-2 Result Card',text:txt,files:[file]});
     } else if(navigator.share){
-      await navigator.share({title:'RUN-2 결과카드',text:txt});
+      await navigator.share({title:'RUN-2 Result Card',text:txt});
     } else {
       // Fallback: download image
       const a=document.createElement('a');a.href=resultImageDataURL;
       a.download='run2_result.png';a.click();
-      alert('이미지를 저장했어요! SNS에 업로드해보세요 📸\n\n'+txt);
+      alert('Image saved! Upload to SNS 📸\n\n'+txt);
     }
   } catch(e){
     const a=document.createElement('a');a.href=resultImageDataURL;
@@ -1484,9 +1484,9 @@ drawPlayerGame(80,GY,false,1,false,0);
 <div id="resultCard" class="hidden">
   <canvas id="resultCanvas" width="380" height="480"></canvas>
   <div class="result-btns">
-    <button class="result-btn share" onclick="shareResultCard()">📤 SNS 공유</button>
-    <button class="result-btn" onclick="startRun()">🔄 다시 도전</button>
-    <button class="result-btn dim" onclick="closeResultCard()">✕ 닫기</button>
+    <button class="result-btn share" onclick="shareResultCard()">📤 Share</button>
+    <button class="result-btn" onclick="startRun()">🔄 Try Again</button>
+    <button class="result-btn dim" onclick="closeResultCard()">✕ Close</button>
   </div>
 </div>
 
