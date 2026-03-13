@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>RUN-2 | Ghost Runner</title>
+<script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
 :root{--bg:#07070f;--accent:#00ffcc;--accent2:#ff00aa;--accent3:#ffe600;--text:#e0e0ff;--card:#0f0f1e;--border:rgba(0,255,200,0.22);}
@@ -394,6 +395,8 @@ function playMusicLoop(){
   musicTimer=setTimeout(playMusicLoop,6400);
 }
 
+function pauseMusic(){if(typeof gainNode!=='undefined'&&gainNode)gainNode.gain.setTargetAtTime(0,audioCtx.currentTime,0.1);}
+function resumeMusic(){if(typeof gainNode!=='undefined'&&gainNode)gainNode.gain.setTargetAtTime(muteState?0:0.18,audioCtx.currentTime,0.1);}
 function startMusic(){
   if(musicPlaying)return;
   musicPlaying=true;
@@ -675,6 +678,7 @@ function launchGame(withGhost){
   showScreen('game');resizeGame();
   initGameOverlay();
   startMusic();
+  cgLoadingDone();
 }
 
 /* ════════════════════════════════════
@@ -1269,7 +1273,7 @@ function killPlayer(){
   state='dead';pl.dead=true;cancelAnimationFrame(raf2);stopMusic();sfx('die');
   const finalScore=activePU==='double'?Math.floor(currentScore*1.5):currentScore;
   const prevBest=bestScore;
-  if(finalScore>bestScore){bestScore=finalScore;localStorage.setItem('run2_best',bestScore);}
+  if(finalScore>bestScore){bestScore=finalScore;localStorage.setItem('run2_best',bestScore);cgHappytime();}
   coinBank+=totalCoins;saveCoinBank();
   if(!ghostMode)localStorage.setItem('run2_ghost',JSON.stringify(rec));
 
@@ -1351,6 +1355,7 @@ function initGameOverlay(){
 /* ── START ── */
 function startRun(ghost=false){
   ghostMode=ghost;state='running';frame=0;currentScore=0;totalCoins=0;comboCount=0;spd=hasItem('boost')?6.5:5;
+  cgGameplayStart();
   if(hasItem('shield2')){activePU='shield';pl.shield=true;puTimer2=180;}
   obs=[];obTimer=0;obInterval=70;coins=[];coinTimer=0;powerups=[];puTimer=0;
   activePU=null;puTimer2=0;particles=[];
@@ -1665,6 +1670,66 @@ function spawnShopFeedback(msg){
   setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(-30px)';},200);
   setTimeout(()=>el.remove(),1000);
 }
+
+/* ════════════════════════════════════
+   CRAZYGAMES SDK
+════════════════════════════════════ */
+let cgSDK = null;
+let cgReady = false;
+
+async function initCrazyGames() {
+  try {
+    await window.CrazyGames.SDK.init();
+    cgSDK = window.CrazyGames.SDK;
+    cgReady = true;
+    cgSDK.game.sdkGameLoadingStart();
+    console.log('[CG] SDK ready');
+  } catch(e) {
+    console.log('[CG] SDK not available (non-CrazyGames env)');
+  }
+}
+
+// 게임 로딩 완료 알림
+function cgLoadingDone() {
+  if(cgReady) cgSDK.game.sdkGameLoadingStop();
+}
+
+// 게임 플레이 시작 알림
+function cgGameplayStart() {
+  if(cgReady) cgSDK.game.gameplayStart();
+}
+
+// 게임 플레이 중단 알림 (메뉴/오버레이)
+function cgGameplayStop() {
+  if(cgReady) cgSDK.game.gameplayStop();
+}
+
+// 미드게임 광고 (게임 오버 시)
+function cgShowMidgameAd(onDone) {
+  if(!cgReady){ onDone && onDone(); return; }
+  cgSDK.ad.requestAd('midgame', {
+    adStarted:  () => { pauseMusic(); },
+    adFinished: () => { resumeMusic(); onDone && onDone(); },
+    adError:    () => { resumeMusic(); onDone && onDone(); },
+  });
+}
+
+// 리워드 광고 (샵에서 무료 코인 받기용 - 선택사항)
+function cgShowRewardedAd(onRewarded) {
+  if(!cgReady){ return; }
+  cgSDK.ad.requestAd('rewarded', {
+    adStarted:  () => { pauseMusic(); },
+    adFinished: () => { resumeMusic(); onRewarded && onRewarded(); },
+    adError:    () => { resumeMusic(); },
+  });
+}
+
+// 행복 순간 (점수 갱신 등 좋은 순간)
+function cgHappytime() {
+  if(cgReady) cgSDK.game.happytime();
+}
+
+initCrazyGames();
 
 /* ── INIT ── */
 updateLandingLB();updateBankDisplay();
