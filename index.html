@@ -117,6 +117,17 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
 .lb-row.silver{background:rgba(200,200,220,.05);border-color:rgba(180,180,200,.18);}
 .lb-row.bronze{background:rgba(255,130,0,.05);border-color:rgba(200,100,0,.18);}
 .lb-row.me{border-color:var(--accent);background:rgba(0,255,200,.06);}
+.shop-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);padding:14px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s;}
+.shop-card.owned{border-color:rgba(0,255,200,.4);background:rgba(0,255,200,.04);}
+.shop-card.cant-afford{opacity:.45;}
+.shop-card-icon{font-size:24px;text-align:center;}
+.shop-card-name{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--accent);text-align:center;letter-spacing:1px;}
+.shop-card-desc{font-size:10px;color:rgba(255,255,255,.5);text-align:center;line-height:1.5;}
+.shop-card-price{font-family:'Press Start 2P',monospace;font-size:9px;color:#ffe600;text-align:center;}
+.shop-buy-btn{font-family:'Press Start 2P',monospace;font-size:7px;padding:7px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:all .15s;width:100%;}
+.shop-buy-btn:hover:not(:disabled){background:var(--accent);color:var(--bg);}
+.shop-buy-btn:disabled{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.3);cursor:default;}
+.shop-buy-btn.owned-btn{border-color:rgba(0,255,200,.4);color:rgba(0,255,200,.7);}
 .lb-rank{font-family:'Press Start 2P',monospace;font-size:clamp(7px,1.8vw,9px);text-align:center;}
 .r1{color:var(--accent3);}.r2{color:#c0c0d0;}.r3{color:#cd7f32;}.rn{color:rgba(255,255,255,.3);}
 .lb-char-cv{width:28px;height:28px;image-rendering:pixelated;}
@@ -168,6 +179,24 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
 .result-btn.dim:hover{background:rgba(255,255,255,.1);color:#fff;}
 /* Challenge banner in game overlay */
 #challengeBanner{font-size:clamp(7px,1.8vw,9px);color:cyan;font-family:'Press Start 2P',monospace;text-align:center;display:none;padding:6px 12px;border:1px solid cyan;background:rgba(0,200,255,.06);}
+
+/* Mode select */
+.mode-card{border:2px solid rgba(255,255,255,.12);padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all .2s;min-width:140px;flex:1;max-width:200px;}
+.mode-card:hover,.mode-card:active{transform:translateY(-3px);}
+.mode-card.dash{border-color:var(--accent);}
+.mode-card.dash:hover{background:rgba(0,255,200,.07);box-shadow:0 0 24px rgba(0,255,200,.18);}
+.mode-card.ghost{border-color:#aa44ff;}
+.mode-card.ghost:hover{background:rgba(170,68,255,.07);box-shadow:0 0 24px rgba(170,68,255,.18);}
+.mode-icon{font-size:28px;line-height:1;}
+.mode-name{font-family:'Press Start 2P',monospace;font-size:clamp(9px,2.5vw,12px);letter-spacing:2px;}
+.mode-card.dash .mode-name{color:var(--accent);}
+.mode-card.ghost .mode-name{color:#aa44ff;}
+.mode-desc{font-size:clamp(8px,1.8vw,10px);color:rgba(255,255,255,.45);text-align:center;line-height:1.6;}
+.ghost-target-card{border:1px solid rgba(255,255,255,.12);padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .2s;flex:1;min-width:120px;}
+.ghost-target-card:hover{border-color:#aa44ff;background:rgba(170,68,255,.06);}
+.ghost-target-card .gt-icon{font-size:22px;}
+.ghost-target-card .gt-name{font-family:'Press Start 2P',monospace;font-size:9px;color:#aa44ff;letter-spacing:1px;}
+.ghost-target-card .gt-desc{font-size:9px;color:rgba(255,255,255,.4);text-align:center;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -182,15 +211,24 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
       <div class="logo-sub">GHOST RUNNER</div>
     </div>
     <div class="tagline">Run · Win · Become Legend</div>
-    <div class="feat-row">
-      <div class="feat">⚡ Endless Runner</div>
-      <div class="feat">👻 Ghost Battle</div>
-      <div class="feat">🪙 Coins & Powerups</div>
-      <div class="feat">🏆 Leaderboard</div>
-    </div>
 
-    <button class="btn-land" onclick="goSetup()"><span>▶ PLAY NOW</span></button>
-    <button class="btn-land lb-btn-l" onclick="showLB()"><span>🏆 LEADERBOARD</span></button>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%;max-width:440px;">
+      <div class="mode-card dash" onclick="goSetup('dash')">
+        <div class="mode-icon">⚡</div>
+        <div class="mode-name">DASH MODE</div>
+        <div class="mode-desc">Classic run.<br>Beat your best score.</div>
+      </div>
+      <div class="mode-card ghost" onclick="goSetup('ghost')">
+        <div class="mode-icon">👻</div>
+        <div class="mode-name">GHOST MODE</div>
+        <div class="mode-desc">Race against<br>a ghost runner.</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-land lb-btn-l" onclick="showLB()"><span>🏆 LEADERBOARD</span></button>
+      <button class="btn-land lb-btn-l" onclick="showShop()" style="border-color:#ffe600;color:#ffe600;" id="shopBtn"><span>🛒 SHOP · <span id="bankDisplay">0</span>🪙</span></button>
+    </div>
   </div>
 </div>
 
@@ -207,6 +245,27 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
       <div class="char-grid" id="charGrid"></div>
     </div>
     <button class="btn-go" onclick="beginGame()">▶ LAUNCH RUN</button>
+  </div>
+</div>
+
+<!-- ══ GHOST TARGET SELECT ══ -->
+<div class="screen hidden" id="ghostSelect">
+  <div class="setup-box" style="max-width:460px;">
+    <div class="setup-title" style="color:#aa44ff;">// GHOST MODE</div>
+    <div class="input-label" style="text-align:center;margin-bottom:16px;">Choose your opponent</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;">
+      <div class="ghost-target-card" onclick="ghostVsSelf()">
+        <div class="gt-icon">👤</div>
+        <div class="gt-name">MY GHOST</div>
+        <div class="gt-desc">Race against<br>your own best run</div>
+      </div>
+      <div class="ghost-target-card" onclick="ghostVsLeaderboard()">
+        <div class="gt-icon">🏆</div>
+        <div class="gt-name">LEADERBOARD</div>
+        <div class="gt-desc">Pick a rival from<br>the leaderboard</div>
+      </div>
+    </div>
+    <button class="btn-go" style="background:transparent;border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.4);font-size:9px;" onclick="showScreen('landing')">← BACK</button>
   </div>
 </div>
 
@@ -251,14 +310,28 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
   </div>
 </div>
 
+<!-- ══ SHOP ══ -->
+<div class="screen hidden" id="shop">
+  <div class="lb-box" style="max-width:480px;width:100%;">
+    <div class="lb-title">🛒 SHOP</div>
+    <div style="text-align:center;font-family:'Press Start 2P',monospace;font-size:10px;color:#ffe600;margin-bottom:16px;">
+      Balance: <span id="shopBalance">0</span> 🪙
+    </div>
+    <div id="shopGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"></div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="lb-action" onclick="showScreen('landing')">← HOME</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ LEADERBOARD ══ -->
 <div class="screen hidden" id="leaderboard">
   <div class="lb-box">
     <div class="lb-title">🏆 LEADERBOARD</div>
     <div class="lb-table" id="lbTable"></div>
     <div class="lb-btns">
-      <button class="lb-action" onclick="goSetup()">▶ PLAY</button>
-      <button class="lb-action back" onclick="showScreen('landing')">← HOME</button>
+      <button class="lb-action" id="lbPlayBtn" onclick="lbChallengeMode?showScreen('ghostSelect'):goSetup('dash')">▶ PLAY</button>
+      <button class="lb-action back" onclick="lbChallengeMode?showScreen('ghostSelect'):showScreen('landing')">← BACK</button>
       <button class="lb-action back lb-clear" onclick="clearLB()" title="Reset records">🗑</button>
     </div>
   </div>
@@ -469,19 +542,23 @@ function drawCharMini(cv,charIdx){
   ctx2.shadowBlur=0;
 }
 
-async function renderLBOnline(highlightId=null){
+let lbChallengeMode=false;
+
+async function renderLBOnline(highlightId=null, challengeMode=false){
+  lbChallengeMode=challengeMode;
   const table=document.getElementById('lbTable');
   table.innerHTML='<div class="lb-empty" style="opacity:.5">🌐 Loading...</div>';
   const online=await sbGetLB();
   if(online){
     renderLBData(online,highlightId);
   } else {
-    renderLBData(getLB(),highlightId); // fallback local
+    renderLBData(getLB(),highlightId);
   }
 }
 
 function renderLB(highlightId=null){
-  renderLBOnline(highlightId);
+  lbChallengeMode=false;
+  renderLBOnline(highlightId,false);
 }
 
 function renderLBData(lb,highlightId=null){
@@ -510,6 +587,11 @@ function renderLBData(lb,highlightId=null){
   lb.slice(0,15).forEach(e=>{const cv=document.getElementById('lbc'+e.id);if(cv)drawCharMini(cv,e.charIdx||0);});
 }
 
+function updateBankDisplay(){
+  const el=document.getElementById('bankDisplay');
+  if(el)el.textContent=coinBank;
+}
+
 function updateLandingLB(){
   const lb=getLB();
   document.querySelectorAll('#landingLB .lb-mini').forEach((row,i)=>{
@@ -525,13 +607,19 @@ function updateLandingLB(){
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
 function showLB(highlightId=null){renderLB(highlightId);showScreen('leaderboard');}
 
-function goSetup(){
+let pendingMode='dash'; // 'dash' or 'ghost'
+
+function goSetup(mode='dash'){
+  pendingMode=mode;
   showScreen('setup');buildCharGrid();
   const saved=localStorage.getItem('run2_name');
   if(saved)document.getElementById('nameInput').value=saved;
   const sc=parseInt(localStorage.getItem('run2_char')||'0');
   selectedChar=sc;
   document.querySelectorAll('.char-card').forEach((c,i)=>c.classList.toggle('selected',i===sc));
+  // Update launch button label
+  const btn=document.querySelector('.btn-go');
+  if(btn)btn.textContent=mode==='ghost'?'👻 CHOOSE GHOST →':'⚡ LAUNCH RUN';
 }
 
 /* ════════════════════════════════════
@@ -576,6 +664,14 @@ function beginGame(){
   if(!raw){document.getElementById('nameInput').focus();return;}
   playerName=raw.substring(0,12).toUpperCase();
   localStorage.setItem('run2_name',playerName);
+  if(pendingMode==='ghost'){
+    showScreen('ghostSelect');
+  } else {
+    launchGame(false);
+  }
+}
+
+function launchGame(withGhost){
   showScreen('game');resizeGame();
   initGameOverlay();
   startMusic();
@@ -603,6 +699,11 @@ resizeGame();
 
 let playerName='PLAYER',state='idle',frame=0,spd=5,raf2;
 let currentScore=0,totalCoins=0,bestScore=parseInt(localStorage.getItem('run2_best')||'0');
+let coinBank=parseInt(localStorage.getItem('run2_bank')||'0');
+let ownedItems=JSON.parse(localStorage.getItem('run2_shop')||'[]');
+function saveCoinBank(){localStorage.setItem('run2_bank',coinBank);}
+function saveShop(){localStorage.setItem('run2_shop',JSON.stringify(ownedItems));}
+function hasItem(id){return ownedItems.includes(id);}
 let comboCount=0,lastObstacleX=-999;
 let lastEntryId=null;
 
@@ -771,7 +872,7 @@ function gameLoop(){
   coins=coins.filter(c=>{
     if(hit(pl.x,pl.y,PW,PH,c.x-8,c.y-8,16,16)){
       const bonus=activePU==='double'?2:1;
-      totalCoins+=bonus;spawnParticle(c.x,c.y,'#ffe600',8,3);sfx('coin');
+      const dcBonus=hasItem('dcoin')?2:1;totalCoins+=bonus*dcBonus;spawnParticle(c.x,c.y,'#ffe600',8,3);sfx('coin');
       updateHUDGame();return false;
     }
     return true;
@@ -1103,7 +1204,16 @@ function renderGame(){
   const bc=CHARS[selectedChar]?.colors.body||'#00ffcc';
   pl.trail.unshift({x:pl.x,y:pl.y});
   if(pl.trail.length>8)pl.trail.pop();
-  pl.trail.forEach((t,i)=>{ctx.globalAlpha=(1-i/8)*.12;ctx.fillStyle=bc;ctx.fillRect(t.x+2,t.y+8,PW-4,PH-8);ctx.globalAlpha=1;});
+  pl.trail.forEach((t,i)=>{
+    const a=(1-i/10);
+    if(hasItem('trail')){
+      ctx.globalAlpha=a*.55;ctx.shadowBlur=8;ctx.shadowColor='#ffe600';
+      ctx.fillStyle='#ffe600';ctx.fillRect(t.x+PW/2-1,t.y+PH/2-1,2,2);
+      if(t.star){ctx.fillRect(t.x+PW/2-3,t.y+PH/2,6,1);ctx.fillRect(t.x+PW/2,t.y+PH/2-3,1,6);}
+      ctx.shadowBlur=0;
+    }else{ctx.globalAlpha=a*.12;ctx.fillStyle=bc;ctx.fillRect(t.x+2,t.y+8,PW-4,PH-8);}
+    ctx.globalAlpha=1;
+  });
 
   // Ghost
   if(ghostMode&&ghostData&&gAlive)drawPlayerGame(gPos.x,gPos.y,false,.45,true,0);
@@ -1160,6 +1270,7 @@ function killPlayer(){
   const finalScore=activePU==='double'?Math.floor(currentScore*1.5):currentScore;
   const prevBest=bestScore;
   if(finalScore>bestScore){bestScore=finalScore;localStorage.setItem('run2_best',bestScore);}
+  coinBank+=totalCoins;saveCoinBank();
   if(!ghostMode)localStorage.setItem('run2_ghost',JSON.stringify(rec));
 
   const lbResult=addLBEntry(playerName,finalScore,totalCoins,selectedChar,rec);
@@ -1204,6 +1315,7 @@ function showGameOver(finalScore,prevBest,lbResult){
   else if(ghostMode){wm.style.display='none';document.getElementById('goMsg').textContent="Couldn't beat the ghost...";}
   else{wm.style.display='none';document.getElementById('goMsg').textContent=isRecord?'🏆 New Record!':'Survive longer to go further';}
   document.getElementById('goStart').textContent='Play Again';
+  updateBankDisplay();
   document.getElementById('goGhost').style.display=localStorage.getItem('run2_ghost')?'flex':'none';
   document.getElementById('goShare').style.display='flex';
   document.getElementById('goLB').style.display='flex';
@@ -1238,7 +1350,8 @@ function initGameOverlay(){
 
 /* ── START ── */
 function startRun(ghost=false){
-  ghostMode=ghost;state='running';frame=0;currentScore=0;totalCoins=0;comboCount=0;spd=5;
+  ghostMode=ghost;state='running';frame=0;currentScore=0;totalCoins=0;comboCount=0;spd=hasItem('boost')?6.5:5;
+  if(hasItem('shield2')){activePU='shield';pl.shield=true;puTimer2=180;}
   obs=[];obTimer=0;obInterval=70;coins=[];coinTimer=0;powerups=[];puTimer=0;
   activePU=null;puTimer2=0;particles=[];
   rec=[];gi=0;gAlive=true;gDefeated=false;gDefFrame=-1;gParts=[];gPos={x:80,y:GY};
@@ -1261,6 +1374,33 @@ function startRun(ghost=false){
   raf2=requestAnimationFrame(gameLoop);
 }
 function startGhost(){startRun(true);}
+
+function ghostVsSelf(){
+  const ghost=localStorage.getItem('run2_ghost');
+  if(!ghost){
+    // No saved ghost yet — play normally first
+    challengeTarget=null;
+    launchGame(true);
+    startRun(false);
+    // show hint
+    setTimeout(()=>showPUMsg('Play once to save your ghost!','#aa44ff'),400);
+    return;
+  }
+  challengeTarget=null; // self ghost, not a leaderboard rival
+  launchGame(true);
+  startRun(true);
+}
+
+function ghostVsLeaderboard(){
+  // Show leaderboard with challenge buttons
+  renderLBForChallenge();
+  showScreen('leaderboard');
+}
+
+function renderLBForChallenge(){
+  // Re-render LB in challenge-pick mode
+  renderLBOnline(null, true);
+}
 
 /* ── SHARE ── */
 function shareRun(){
@@ -1473,8 +1613,61 @@ async function shareResultCard(){
   }
 }
 
+/* ════════════════════════════════════
+   SHOP
+════════════════════════════════════ */
+const SHOP_ITEMS=[
+  {id:'boost',  icon:'⚡', name:'HEAD START',  desc:'Begin each run at speed 6.5',   price:80,  type:'passive'},
+  {id:'dcoin',  icon:'🪙', name:'COIN x2',     desc:'Earn double coins every run',   price:120, type:'passive'},
+  {id:'trail',  icon:'✨', name:'STAR TRAIL',  desc:'Glowing star trail behind you', price:60,  type:'passive'},
+  {id:'shield2',icon:'🛡️', name:'EXTRA SHIELD',desc:'Start every run with a shield',price:150, type:'passive'},
+];
+
+function showShop(){
+  document.getElementById('shopBalance').textContent=coinBank;
+  const grid=document.getElementById('shopGrid');
+  grid.innerHTML=SHOP_ITEMS.map(item=>{
+    const owned=hasItem(item.id);
+    const canAfford=coinBank>=item.price;
+    return `<div class="shop-card ${owned?'owned':(!canAfford?'cant-afford':'')}">
+      <div class="shop-card-icon">${item.icon}</div>
+      <div class="shop-card-name">${item.name}</div>
+      <div class="shop-card-desc">${item.desc.replace(/\n/,'<br>')}</div>
+      <div class="shop-card-price">${owned?'✓ OWNED':item.price+' 🪙'}</div>
+      <button class="shop-buy-btn ${owned?'owned-btn':''}"
+        onclick="buyItem('${item.id}')"
+        ${owned||!canAfford?'disabled':''}>
+        ${owned?'EQUIPPED':canAfford?'BUY':'NEED MORE 🪙'}
+      </button>
+    </div>`;
+  }).join('');
+  showScreen('shop');
+}
+
+function buyItem(id){
+  if(hasItem(id))return;
+  const item=SHOP_ITEMS.find(i=>i.id===id);
+  if(!item||coinBank<item.price)return;
+  coinBank-=item.price;
+  ownedItems.push(id);
+  saveCoinBank();saveShop();
+  // Flash feedback
+  spawnShopFeedback(item.icon+' '+item.name+' unlocked!');
+  showShop(); // re-render
+  document.getElementById('bankDisplay').textContent=coinBank;
+}
+
+function spawnShopFeedback(msg){
+  const el=document.createElement('div');
+  el.textContent=msg;
+  el.style.cssText='position:fixed;top:40%;left:50%;transform:translateX(-50%);font-family:"Press Start 2P",monospace;font-size:10px;color:#ffe600;text-shadow:0 0 12px #ffe600;pointer-events:none;z-index:999;transition:all .8s;text-align:center;';
+  document.body.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(-30px)';},200);
+  setTimeout(()=>el.remove(),1000);
+}
+
 /* ── INIT ── */
-updateLandingLB();
+updateLandingLB();updateBankDisplay();
 resizeGame();
 ctx.clearRect(0,0,BW,BH);
 drawBgGame();drawGroundGame();
